@@ -1,3 +1,4 @@
+const inquirer = require("inquirer");
 const express = require('express');
 const db = require('./db/connection');
 
@@ -7,8 +8,6 @@ const app = express();
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
-
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {
@@ -23,3 +22,46 @@ db.connect(err => {
         console.log('Server running on port ${PORT}');
     });
 });
+
+//Prompt
+function startPrompt() {
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "What would you like to do?",
+            name: "choice",
+            choices: [
+                "View All Departments",
+                "View All Roles",
+                "View All Employees",
+                "Add a Department",
+                "Add a Role",
+                "Add an Employee",
+                "Update an Employee Role"
+            ]
+        }
+    ]).then(function(response){
+        switch (response.choice) {
+            case "View All Departments": viewDepartments();
+            break;
+
+            case "View All Roles": viewRoles();
+            break;
+
+            case "View All Employees": viewEmployees();
+            break;
+
+            case "Add a Department": addDepartment();
+            break;
+
+            case "Add a Role": addRole();
+            break;
+
+            case "Add a Employee": addEmployee();
+            break;
+
+            case "Update an Employee Role": updateRole();
+            break;
+        }
+    })
+}
