@@ -17,10 +17,8 @@ app.use((req, res) => {
 //Start server after DB connection
 db.connect(err => {
     if (err) throw err;
-    console.log('Database connected.');
-    app.listen(PORT, () => {
-        console.log('Server running on port ${PORT}');
-    });
+    console.log('Connected as ID' + db.threadId)
+    startPrompt();
 });
 
 //Prompt
@@ -42,26 +40,36 @@ function startPrompt() {
         }
     ]).then(function(response){
         switch (response.choice) {
-            case "View All Departments": viewDepartments();
-            break;
+            // case "View All Departments": viewDepartments();
+            // break;
 
-            case "View All Roles": viewRoles();
-            break;
+            // case "View All Roles": viewRoles();
+            // break;
 
             case "View All Employees": viewEmployees();
             break;
 
-            case "Add a Department": addDepartment();
-            break;
+            // case "Add a Department": addDepartment();
+            // break;
 
-            case "Add a Role": addRole();
-            break;
+            // case "Add a Role": addRole();
+            // break;
 
-            case "Add a Employee": addEmployee();
-            break;
+            // case "Add a Employee": addEmployee();
+            // break;
 
-            case "Update an Employee Role": updateRole();
-            break;
+            // case "Update an Employee Role": updateRole();
+            // break;
         }
+    })
+}
+
+//View All Employees
+function viewEmployees() {
+    db.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name;",
+    function(err, res) {
+        if (err) throw err
+        console.log.table(res)
+        startPrompt()
     })
 }
