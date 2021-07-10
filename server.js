@@ -58,8 +58,8 @@ function startPrompt() {
             case "Add a Employee": addEmployee();
             break;
 
-            // case "Update an Employee Role": updateRole();
-            // break;
+            case "Update an Employee Role": updateRole();
+            break;
         }
     })
 }
@@ -141,6 +141,30 @@ function addRole() {
     });
 }
 
+//Select Role function
+let roleArray = [];
+function selectRole() {
+    db.query("SELECT * FROM role", function(err, res) {
+        if (err) throw err
+        for (var i = 0; i < res.length; i++) {
+            roleArray.push(res[i].title);
+        }
+    })
+    return roleArray;
+}
+
+//Select Manager function
+let managerArray = [];
+function selectManager() {
+    db.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function(err, res) {
+        if (err) throw err
+        for (var i = 0; i < res.length; i++) {
+            managerArray.push(res[i].first_name);
+        }
+    })
+    return managerArray;
+}
+
 //Add an Employee
 function addEmployee() {
     inquirer.prompt([
@@ -184,3 +208,36 @@ function addEmployee() {
         })
     })
 }
+
+//Get Role ID
+function getRoleId(roleName) {
+    let query = "SELECT * FROM role WHERE role.title=?";
+    let args = [roleName];
+    const rows = db.query(query.args);
+    return rows[0].id;
+}
+//Get Employee's full name
+function getFullName(fullName) {
+    let employee = fullName.split(" ");
+    if(employee.length == 2) {
+        return employee;
+    }
+
+    let last_name = employee[employee.length - 1];
+    let first_name = "";
+    for(var i = 0; i < employee.length - 1; i++) {
+        first_name = first_name + employee[i] + " ";
+    }
+    return [first_name.trim(), last_name];
+}
+
+//Update an Employee Role
+function updateRole() {
+    let roleID = getRoleId(information.role);
+    let employee = getFullName(information.employeeName);
+    let query = "UPDATE employee SET role_id=? WHERE employee.first_name=? AND employee.last_name=?";
+    let args = [roleId, employee[0], employee[1]];
+    let rows = db.query(query, args);
+    console.log(`Updated employe #{employee[0]} ${employee[1]} with role ${information.role}`);
+}
+
